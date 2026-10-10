@@ -1,0 +1,6 @@
+{
+  "name": "SkillBridge AI",
+  "description": "AI-powered content creator marketplace connecting clients with skilled video editors, photographers, graphic designers, social media creators, and scriptwriters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
