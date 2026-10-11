@@ -5,12 +5,16 @@ interface FooterProps {
   onSelectCategory: (category: CreatorDiscipline | 'all') => void;
   onOpenCreatorStudio: () => void;
   onOpenPostProject: () => void;
+  onOpenDataSources?: () => void;
+  onOpenSecurityCenter?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onSelectCategory,
   onOpenCreatorStudio,
   onOpenPostProject,
+  onOpenDataSources,
+  onOpenSecurityCenter,
 }) => {
   return (
     <footer className="bg-[#06141B] border-t border-[#253745] text-[#9BA8AB] py-12">
@@ -98,6 +102,14 @@ export const Footer: React.FC<FooterProps> = ({
                   className="hover:text-[#CCD0CF] transition-colors cursor-pointer text-left"
                 >
                   Creator Studio & AI Profile Generator
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onOpenDataSources}
+                  className="hover:text-[#CCD0CF] transition-colors cursor-pointer text-left"
+                >
+                  AI Benchmark Rubrics & Evaluation Data
                 </button>
               </li>
               <li>

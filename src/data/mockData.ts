@@ -72,6 +72,8 @@ export const INITIAL_CREATORS: Creator[] = [
         comment: 'Marcus took our raw footage and elevated the color science beyond our highest expectations. Pacing is impeccable.',
         rating: 5,
         date: 'Oct 2026',
+        verifiedContractId: 'SB-CTR-8842',
+        verifiedMilestoneTier: 'Milestone 3 Released: Master ProRes & RAW Conform',
       },
     ],
   },

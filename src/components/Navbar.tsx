@@ -9,6 +9,8 @@ interface NavbarProps {
   setActiveTab: (tab: ActiveNavTab) => void;
   onOpenPostProject: () => void;
   onOpenCreatorStudio: () => void;
+  onOpenDataSources: () => void;
+  onOpenSecurityCenter: () => void;
   inquiriesCount: number;
   currentUser: CreatorAccount | null;
 }
@@ -17,6 +19,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onOpenPostProject,
+  onOpenDataSources,
+  onOpenSecurityCenter,
   inquiriesCount,
   currentUser,
 }) => {
@@ -105,6 +109,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Briefcase className="w-3.5 h-3.5 text-[#9BA8AB]" />
             <span>Opportunities</span>
+          </button>
+
+          <button
+            onClick={onOpenDataSources}
+            className="whitespace-nowrap text-[#9BA8AB] hover:text-[#CCD0CF] transition-colors cursor-pointer py-1"
+          >
+            AI Intelligence
+          </button>
+
+          <button
+            onClick={onOpenSecurityCenter}
+            className="whitespace-nowrap flex items-center gap-1.5 text-emerald-400/90 hover:text-emerald-300 transition-colors cursor-pointer py-1"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Trust & Security</span>
           </button>
 
           {inquiriesCount > 0 && (

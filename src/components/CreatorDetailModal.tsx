@@ -247,16 +247,28 @@ export const CreatorDetailModal: React.FC<CreatorDetailModalProps> = ({
                     className="bg-[#06141B] border border-[#253745] rounded-lg p-4 text-xs"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-[#CCD0CF]">{rev.clientName}</span>
                         <span aria-hidden="true" className="text-[#4A5C6A]">·</span>
                         <span className="text-[#9BA8AB]">{rev.role}, {rev.company}</span>
+                        {rev.verifiedContractId && (
+                          <span className="text-[10px] font-mono text-[#CCD0CF] bg-[#11212D] border border-[#253745] px-1.5 py-0.5 rounded flex items-center gap-1">
+                            <ShieldCheck className="w-3 h-3 text-[#CCD0CF]" />
+                            <span>Verified Contract {rev.verifiedContractId}</span>
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1 text-[#CCD0CF]">
                         <Star className="w-3 h-3 fill-current text-[#CCD0CF]" />
                         <span className="font-mono">{rev.rating}.0</span>
                       </div>
                     </div>
+                    {rev.verifiedMilestoneTier && (
+                      <div className="text-[10px] font-mono text-[#9BA8AB] mb-1.5 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-[#CCD0CF]" />
+                        <span>Escrow Completed: {rev.verifiedMilestoneTier}</span>
+                      </div>
+                    )}
                     <p className="text-[#9BA8AB] leading-relaxed italic">
                       "{rev.comment}"
                     </p>

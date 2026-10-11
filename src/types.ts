@@ -31,6 +31,8 @@ export interface CreatorReview {
   comment: string;
   rating: number;
   date: string;
+  verifiedContractId?: string; // P1: Verified-project review
+  verifiedMilestoneTier?: string; // e.g. "Milestone 3 Released: Master ProRes Delivery"
 }
 
 export interface Creator {
@@ -48,6 +50,7 @@ export interface Creator {
   rating: number;
   completedProjects: number;
   verified: boolean;
+  isEmailVerified?: boolean;
   avatar: string;
   coverImage?: string;
   bio: string;
@@ -61,6 +64,31 @@ export interface Creator {
     rankTier: string;
     rankBadge: string;
     rankingRationale: string;
+  };
+}
+
+export interface EscrowMilestone {
+  id: string;
+  title: string;
+  amount: number;
+  percentage: number;
+  status: 'Pending' | 'In Escrow' | 'Released' | 'Disputed';
+}
+
+export interface EscrowContract {
+  id: string;
+  projectTitle: string;
+  creatorId: string;
+  creatorName: string;
+  clientEmail: string;
+  totalAmount: number;
+  status: 'Draft' | 'Funded' | 'Disputed' | 'Completed';
+  milestones: EscrowMilestone[];
+  disputeInfo?: {
+    raisedBy: string;
+    reason: string;
+    evidence: string;
+    raisedAt: string;
   };
 }
 

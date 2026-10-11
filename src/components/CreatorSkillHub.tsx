@@ -22,6 +22,7 @@ interface CreatorSkillHubProps {
   onLogout: () => void;
   onStoreNewPortfolio: (creator: Creator) => void;
   onBrowseMarketplace: () => void;
+  onOpenDataSources: () => void;
 }
 
 export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
@@ -30,6 +31,7 @@ export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
   onLogout,
   onStoreNewPortfolio,
   onBrowseMarketplace,
+  onOpenDataSources,
 }) => {
   // Login form state
   const [loginName, setLoginName] = useState('');
@@ -43,6 +45,7 @@ export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
   const [toolsUsed, setToolsUsed] = useState('DaVinci Resolve Studio 19, Premiere Pro, Arri RAW Workflow, Dehancer');
   const [previewImageUrl, setPreviewImageUrl] = useState('/src/assets/images/portfolio_video_showreel_1791631043025.jpg');
   const [uploadedFileName, setUploadedFileName] = useState('campaign_master_color_grade.mov');
+  const [uploadSecurityError, setUploadSecurityError] = useState<string | null>(null);
   
   // AI analysis state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -78,10 +81,30 @@ export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
     onLogin(newAccount);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setUploadedFileName(file.name);
+      setUploadSecurityError(null);
+
+      // P0 Security Check: validate file on backend
+      try {
+        const res = await fetch('/api/security/validate-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: file.name, fileSize: file.size }),
+        });
+        const valData = await res.json();
+        if (!valData.success) {
+          setUploadSecurityError(valData.error || 'Blocked by P0 Upload Shield. Malicious or unauthorized file format.');
+          setUploadedFileName('');
+          return;
+        }
+        setUploadedFileName(valData.sanitizedName);
+      } catch (err) {
+        console.warn('Upload security validation notice:', err);
+        setUploadedFileName(file.name);
+      }
+
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -384,23 +407,34 @@ export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
                 </p>
               </div>
 
-              {/* Sample Preset loader */}
-              <button
-                type="button"
-                onClick={() => {
-                  setWorkTitle('Commercial Automotive Noir Brand Anthem (DaVinci Resolve)');
-                  setWorkDescription(
-                    'Color graded 60-second national commercial shot on Arri Alexa Mini LF. Applied bespoke 35mm film grain curve, calibrated tungsten interior lighting against deep midnight blacks, and engineered dynamic multi-stem audio pass.'
-                  );
-                  setToolsUsed('DaVinci Resolve Studio 19, Premiere Pro, Arri RAW, Dehancer, Izotope RX');
-                  setUploadedFileName('automotive_anthem_final_prores.mov');
-                  setPreviewImageUrl('/src/assets/images/portfolio_video_showreel_1791631043025.jpg');
-                }}
-                className="text-xs text-[#CCD0CF] hover:underline flex items-center gap-1 cursor-pointer font-mono"
-              >
-                <RefreshCw className="w-3 h-3" />
-                <span>Load Sample Work Data</span>
-              </button>
+              {/* Sample Preset loader and AI benchmark source button */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onOpenDataSources}
+                  className="text-xs text-[#9BA8AB] hover:text-[#CCD0CF] bg-[#06141B] px-3 py-1.5 rounded border border-[#253745] hover:border-[#4A5C6A] transition-colors cursor-pointer flex items-center gap-1.5 font-mono"
+                >
+                  <Sparkles className="w-3 h-3 text-[#CCD0CF]" />
+                  <span>How Does AI Evaluate Work?</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWorkTitle('Commercial Automotive Noir Brand Anthem (DaVinci Resolve)');
+                    setWorkDescription(
+                      'Color graded 60-second national commercial shot on Arri Alexa Mini LF. Applied bespoke 35mm film grain curve, calibrated tungsten interior lighting against deep midnight blacks, and engineered dynamic multi-stem audio pass.'
+                    );
+                    setToolsUsed('DaVinci Resolve Studio 19, Premiere Pro, Arri RAW, Dehancer, Izotope RX');
+                    setUploadedFileName('automotive_anthem_final_prores.mov');
+                    setPreviewImageUrl('/src/assets/images/portfolio_video_showreel_1791631043025.jpg');
+                  }}
+                  className="text-xs text-[#CCD0CF] hover:underline flex items-center gap-1 cursor-pointer font-mono"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Load Sample Data</span>
+                </button>
+              </div>
             </div>
 
             <form onSubmit={handleAnalyzeWork} className="space-y-6">
@@ -453,6 +487,15 @@ export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
                   <label className="block text-xs font-semibold text-[#CCD0CF] mb-1.5 uppercase tracking-wider">
                     Upload Asset / Master File
                   </label>
+                  {uploadSecurityError && (
+                    <div className="mb-3 p-3 bg-rose-950/60 border border-rose-800 rounded-lg text-xs text-rose-300 flex items-start gap-2">
+                      <ShieldCheck className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="block font-semibold">P0 Upload Shield Intercepted:</strong>
+                        <span>{uploadSecurityError}</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="border-2 border-dashed border-[#253745] hover:border-[#4A5C6A] rounded-xl p-6 text-center bg-[#06141B] transition-colors relative">
                     <input
                       type="file"
@@ -527,6 +570,14 @@ export const CreatorSkillHub: React.FC<CreatorSkillHubProps> = ({
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#9BA8AB] font-mono mb-1">
                       <Award className="w-4 h-4 text-[#CCD0CF]" />
                       <span>AI Skill Ranking Assigned</span>
+                      <span aria-hidden="true" className="text-[#4A5C6A]">·</span>
+                      <button
+                        type="button"
+                        onClick={onOpenDataSources}
+                        className="text-[#CCD0CF] hover:underline cursor-pointer lowercase"
+                      >
+                        (view benchmark data sources & rubrics)
+                      </button>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-bold text-[#CCD0CF]">
                       {analysisResult.ranking.rankTier}

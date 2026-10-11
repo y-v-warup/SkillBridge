@@ -11,6 +11,9 @@ import { OpportunitiesBoard } from './components/OpportunitiesBoard';
 import { CreatorStudioModal } from './components/CreatorStudioModal';
 import { PostProjectModal } from './components/PostProjectModal';
 import { CollaborationModal } from './components/CollaborationModal';
+import { AIEvaluationDataSourcesModal } from './components/AIEvaluationDataSourcesModal';
+import { SecurityTrustCenterModal } from './components/SecurityTrustCenterModal';
+import { ReportAbuseModal } from './components/ReportAbuseModal';
 import { HowItWorks } from './components/HowItWorks';
 import { InquiriesList } from './components/InquiriesList';
 import { Footer } from './components/Footer';
@@ -76,6 +79,19 @@ export default function App() {
   const [detailModalCreator, setDetailModalCreator] = useState<Creator | null>(null);
   const [isCreatorStudioOpen, setIsCreatorStudioOpen] = useState(false);
   const [isPostProjectOpen, setIsPostProjectOpen] = useState(false);
+  const [isDataSourcesModalOpen, setIsDataSourcesModalOpen] = useState(false);
+  const [isSecurityCenterOpen, setIsSecurityCenterOpen] = useState(false);
+  const [reportModalData, setReportModalData] = useState<{
+    isOpen: boolean;
+    targetId: string;
+    targetName: string;
+    targetType: 'creator' | 'client' | 'project';
+  }>({
+    isOpen: false,
+    targetId: '',
+    targetName: '',
+    targetType: 'creator',
+  });
   const [collabModal, setCollabModal] = useState<{
     isOpen: boolean;
     creator: Creator | null;
@@ -175,6 +191,8 @@ export default function App() {
         setActiveTab={setActiveTab}
         onOpenPostProject={() => setIsPostProjectOpen(true)}
         onOpenCreatorStudio={() => setIsCreatorStudioOpen(true)}
+        onOpenDataSources={() => setIsDataSourcesModalOpen(true)}
+        onOpenSecurityCenter={() => setIsSecurityCenterOpen(true)}
         inquiriesCount={inquiries.length}
         currentUser={currentUser}
       />
@@ -216,6 +234,7 @@ export default function App() {
             onLogout={handleLogoutCreator}
             onStoreNewPortfolio={handleStoreNewPortfolio}
             onBrowseMarketplace={() => setActiveTab('explore')}
+            onOpenDataSources={() => setIsDataSourcesModalOpen(true)}
           />
         )}
 
@@ -296,6 +315,7 @@ export default function App() {
         }}
         onOpenCreatorStudio={() => setActiveTab('creator_hub')}
         onOpenPostProject={() => setIsPostProjectOpen(true)}
+        onOpenDataSources={() => setIsDataSourcesModalOpen(true)}
       />
 
       {/* Modals */}
@@ -325,6 +345,33 @@ export default function App() {
         prefilledBudget={collabModal.prefilledBudget}
         onClose={() => setCollabModal({ isOpen: false, creator: null })}
         onSubmitInquiry={handleSubmitInquiry}
+      />
+
+      <AIEvaluationDataSourcesModal
+        isOpen={isDataSourcesModalOpen}
+        onClose={() => setIsDataSourcesModalOpen(false)}
+      />
+
+      <SecurityTrustCenterModal
+        isOpen={isSecurityCenterOpen}
+        onClose={() => setIsSecurityCenterOpen(false)}
+        onOpenReportAbuse={(id, name) => {
+          setIsSecurityCenterOpen(false);
+          setReportModalData({
+            isOpen: true,
+            targetId: id,
+            targetName: name,
+            targetType: 'creator',
+          });
+        }}
+      />
+
+      <ReportAbuseModal
+        isOpen={reportModalData.isOpen}
+        targetId={reportModalData.targetId}
+        targetName={reportModalData.targetName}
+        targetType={reportModalData.targetType}
+        onClose={() => setReportModalData((prev) => ({ ...prev, isOpen: false }))}
       />
     </div>
   );
